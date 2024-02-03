@@ -1,0 +1,54 @@
+version: "3"
+services:
+  api_service:
+    build: .
+    restart: always
+    ports:
+      - 3003:3003
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      RDS_PORT: 3307
+      DB_NAME: employee_service
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    networks:
+      - mysql-network
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3307:3307"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      #      MYSQL_USER: root
+      #      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: employee_service
+    volumes:
+      - mysql-database-data-volume:/var/lib/mysql
+    networks:
+      - mysql-network
+#  flyway:
+#    container_name: my-flyway
+#    environment:
+#      - FLYWAY_USER=root
+#      - FLYWAY_PASSWORD=root
+#      - FLYWAY_URL=jdbc:mysql://mysql/flyway-plugin?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8
+#      - FLYWAY_SCHEMAS=flyway-plugin
+#      - FLYWAY_GROUP=true
+#      - FLYWAY_CREATE_SCHEMAS=true
+#    volumes:
+#      - ./src/main/resources/db/migration:/flyway/sql
+#    image: flyway/flyway:latest
+#    command: -locations=filesystem:/flyway/sql -connectRetries=60  migrate
+#    depends_on:
+#      - mysql
+#    networks:
+#      - order-service-mysql-network
+
+# Volumes
+volumes:
+  mysql-database-data-volume:
+networks:
+  mysql-network:
